@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      FLASK_ENV: development
+    command: flask run --host=0.0.0.0
+
+  db:
+    image: nouchka/sqlite3
+    volumes:
+      - ./smart_meeting_scheduler.db:/data/smart_meeting_scheduler.db

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Meeting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <a href="#" class="logo">Smart Meeting Scheduler</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="schedule-container">
+            <h1>Schedule a Meeting</h1>
+            <div id="calendar"></div>
+            <form id="meeting-form" method="POST" action="{{ url_for('schedule') }}" style="display:none;">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"></textarea>
+                <label for="start_time">Start Time:</label>
+                <input type="datetime-local" id="start_time" name="start_time" required>
+                <label for="end_time">End Time:</label>
+                <input type="datetime-local" id="end_time" name="end_time" required>
+                <button type="submit">Schedule</button>
+            </form>
+            <form id="suggest-form" method="POST" action="{{ url_for('suggest_slots') }}">
+                <label for="participants">Participants:</label>
+                <select id="participants" name="participants" multiple required>
+                    {% for user in users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Suggest Optimal Slots</button>
+            </form>
+            <div id="suggested-slots"></div>
+            <div id="meetings-list" class="meetings-list">
+                <h2>Your Meetings</h2>
+                <ul>
+                    {% for meeting in meetings %}
+                        <li class="meeting-item">
+                            <div class="meeting-details">
+                                <span class="meeting-title">{{ meeting[1] }}</span>
+                                <span class="meeting-time">{{ meeting[2] }} to {{ meeting[3] }}</span>
+                            </div>
+                            <div class="meeting-actions">
+                                <button class="edit-button" onclick="editMeeting('{{ meeting[0] }}')">Edit</button>
+                                <form method="POST" action="{{ url_for('delete_meeting', meeting_id=meeting[0]) }}" style="display:inline;">
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Smart Meeting Scheduler. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                selectable: true,
+                selectHelper: true,
+                select: function(start, end) {
+                    $('#start_time').val(moment(start).format('YYYY-MM-DDTHH:mm'));
+                    $('#end_time').val(moment(end).format('YYYY-MM-DDTHH:mm'));
+                    $('#meeting-form').show();
+                },
+                editable: true,
+                events: '/get_meetings'
+            });
+
+            $('#suggest-form').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: $(this).attr('method'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#suggested-slots').empty();
+                        if (response.length === 0) {
+                            $('#suggested-slots').append('<p>No common available slots found.</p>');
+                        } else {
+                            response.forEach(function(slot) {
+                                $('#suggested-slots').append('<p>' + slot[0] + ' to ' + slot[1] + '</p>');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        function editMeeting(meetingId) {
+            $.ajax({
+                url: '/get_meeting/' + meetingId,
+                method: 'GET',
+                success: function(response) {
+                    $('#title').val(response.title);
+                    $('#description').val(response.description);
+                    $('#start_time').val(response.start_time);
+                    $('#end_time').val(response.end_time);
+                    $('#meeting-form').attr('action', '/update_meeting/' + meetingId);
+                    $('#meeting-form').show();
+                }
+            });
+        }
+    </script>
+    <style>
+        .meetings-list {
+            margin-top: 40px;
+        }
+
+        .meetings-list h2 {
+            text-align: center;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .meeting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .meeting-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meeting-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .meeting-time {
+            color: #666;
+        }
+
+        .meeting-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-button, .delete-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .edit-button {
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</body>
+</html>

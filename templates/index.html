@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Meeting Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <a href="#" class="logo">Smart Meeting Scheduler</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                </div>
+            </div>
+        </nav>
+        <div class="hero">
+            <div class="container">
+                <h1>Welcome to Smart Meeting Scheduler</h1>
+                <p>Effortlessly schedule meetings with AI-powered suggestions and seamless calendar integration.</p>
+                <a href="{{ url_for('register') }}" class="button">Get Started</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section class="features">
+            <div class="container">
+                <h2>Features</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <h3>AI-Powered Suggestions</h3>
+                        <p>Our AI suggests the best meeting times based on participants' availability.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>Calendar Integration</h3>
+                        <p>Seamlessly integrate with your existing calendars to avoid conflicts.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>User-Friendly Interface</h3>
+                        <p>Enjoy a clean and intuitive interface for scheduling and managing meetings.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="cta">
+            <div class="container">
+                <h2>Ready to get started?</h2>
+                <p>Join us today and start scheduling your meetings effortlessly.</p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('login') }}" class="button">Login</a>
+                    <a href="{{ url_for('register') }}" class="button">Register</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Smart Meeting Scheduler. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

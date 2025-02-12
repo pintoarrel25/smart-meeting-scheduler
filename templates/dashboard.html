@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <a href="#" class="logo">Smart Meeting Scheduler</a>
+                <div class="nav-links">
+                    <a href="{{ url_for('schedule') }}">Schedule a Meeting</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="dashboard-container">
+            <h1>Welcome, {{ username }}!</h1>
+            <section class="dashboard-info">
+                <h2>About Smart Meeting Scheduler</h2>
+                <p>Smart Meeting Scheduler is an AI-powered application designed to help you effortlessly schedule meetings. Our platform integrates seamlessly with your existing calendars and provides intelligent suggestions for the best meeting times based on participants' availability.</p>
+            </section>
+            <section class="availability">
+                <h2>Add Your Availability</h2>
+                <form method="POST" action="{{ url_for('availability') }}">
+                    <label for="start_time">Start Time:</label>
+                    <input type="datetime-local" id="start_time" name="start_time" required>
+                    <label for="end_time">End Time:</label>
+                    <input type="datetime-local" id="end_time" name="end_time" required>
+                    <button type="submit">Add Availability</button>
+                </form>
+            </section>
+            <section class="meetings">
+                <h2>Priority Meetings (within 3 days)</h2>
+                <ul>
+                    {% for meeting in priority_meetings %}
+                        <li>{{ meeting[0] }} - {{ meeting[1] }} to {{ meeting[2] }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <h2>Upcoming Meetings</h2>
+                <ul>
+                    {% for meeting in upcoming_meetings %}
+                        <li>{{ meeting[0] }} - {{ meeting[1] }} to {{ meeting[2] }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <h2>Completed Meetings</h2>
+                <ul>
+                    {% for meeting in completed_meetings %}
+                        <li>{{ meeting[0] }} - {{ meeting[1] }} to {{ meeting[2] }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Smart Meeting Scheduler. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
