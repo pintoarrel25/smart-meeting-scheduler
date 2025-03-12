@@ -12,7 +12,7 @@ Smart Meeting Scheduler is an AI-powered application designed to help you effort
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/smart-meeting-scheduler.git
+    git clone https://github.com/pintoarrel25/smart-meeting-scheduler.git
     cd smart-meeting-scheduler
     ```
 
